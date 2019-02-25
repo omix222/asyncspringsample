@@ -1,6 +1,7 @@
 package com.example.asyncsample;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,12 @@ public class AsyncServiceException {
 	
 	public  CompletableFuture<String> asyncService() {
 		logger.info("start AsyncServiceException.asyncService CompletableFuture");
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		throw new RuntimeException("from async Exception!");
 	}
 }

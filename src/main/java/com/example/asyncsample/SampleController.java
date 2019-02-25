@@ -58,10 +58,29 @@ public class SampleController {
 	@RequestMapping("/completableFutureError")
 	public String  doCompletableFutureError() throws InterruptedException, ExecutionException{
 		logger.info("start SampleController.doCompletableFuture");
+
+		CompletableFuture<String> resultEx = serviceEx.asyncService();
+
+		//例外発生時の非同期スレッド側の例外取得方法
+		// http://pppurple.hatenablog.com/entry/2017/06/23/220109
+   String errorStr  =		resultEx.handle((t, error) -> {
+			if (error != null) {
+				System.out.println("cause : " + error);
+				return "fallback value"; // エラー発生時の返却値の指定
+			} else {
+				return t;
+			}
+		}).get();
+
+		// 一軒ずつ例外が出ていないかを確認するパターン
+//		boolean result = resultEx.isCompletedExceptionally();
+//		if (!result) {
+//			logger.info("isCompletedExceptionally : "+result);
+//			throw new RuntimeException("Error");
+//		}
 		CompletableFuture<String> resultA = serviceA.asyncService();
 		CompletableFuture<String> resultB = serviceB.asyncService();
-		CompletableFuture<String> resultEx = serviceEx.asyncService();
-		CompletableFuture.allOf(resultA, resultB, resultEx).join();
+		//CompletableFuture.allOf(resultA, resultB, resultEx).join();
 		logger.info("end SampleController.doCompletableFuture");
 		return resultA.get() + " " + resultB.get() + " " + LocalDateTime.now().toString();
 	}
